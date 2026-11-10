@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Larridin Concept · Gaurav Basantani</title>
+<meta name="description" content="A number a CFO can defend: how sure an AI return is, where it comes from, and the renewal call. An unofficial concept by Gaurav Basantani.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: the product screen is the page. One finance app window (steps | main step | "Ready to decide" panel), a story strip above, one proof strip below. */
+:root{
+  --bg:#f0eff5; --window:#ffffff; --panel:#f7f6fb; --ink:#16131f; --muted:#5e5a6e; --line:#e3e0ec;
+  --accent:#5b3cc4; --accent-ink:#ffffff; --accent-soft:#ece7fb;
+  --ok:#14794b; --ok-soft:#dff3e8; --warn:#8a5a00; --warn-soft:#fdf0d5; --bad:#b42318; --bad-soft:#fde7e4; --off:#a29eb0;
+  --shadow:0 1px 2px rgba(22,19,31,.05),0 14px 34px rgba(22,19,31,.09);
+  --sans:"Inter",system-ui,-apple-system,sans-serif; --display:"Inter Tight","Inter",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e0c14; --window:#17141f; --panel:#12101a; --ink:#ebe8f3; --muted:#a29db3; --line:#2c2839;
+  --accent:#b4a2ff; --accent-ink:#1a1033; --accent-soft:#251d45;
+  --ok:#7fdcae; --ok-soft:#14301f; --warn:#f2c46b; --warn-soft:#382c11; --bad:#ff9a8f; --bad-soft:#3a1714; --off:#5f5a6e; --shadow:none; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e0c14; --window:#17141f; --panel:#12101a; --ink:#ebe8f3; --muted:#a29db3; --line:#2c2839;
+  --accent:#b4a2ff; --accent-ink:#1a1033; --accent-soft:#251d45;
+  --ok:#7fdcae; --ok-soft:#14301f; --warn:#f2c46b; --warn-soft:#382c11; --bad:#ff9a8f; --bad-soft:#3a1714; --off:#5f5a6e; --shadow:none; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 var(--sans);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px}
+.wrap{max-width:1120px;margin:0 auto;display:grid;gap:22px}
+p,h1,h2,h3{margin:0}
+.head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap}
+.eyebrow{font:500 .72rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+h1{font:800 clamp(1.6rem,3.4vw,2.3rem)/1.08 var(--display);letter-spacing:-.025em;margin-top:6px;text-wrap:balance}
+.sub{color:var(--muted);margin-top:6px;font-size:1rem;max-width:62ch}
+.by{font:500 .78rem var(--mono);color:var(--muted);text-align:right}
+.by a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}
+@media(max-width:600px){.by{text-align:left}}
+/* story strip */
+.story{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:var(--window);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+@media(max-width:760px){.story{grid-template-columns:1fr}}
+.beat{padding:16px 18px;display:grid;gap:6px;align-content:start}
+.beat+.beat{border-left:1px solid var(--line)}
+@media(max-width:760px){.beat+.beat{border-left:0;border-top:1px solid var(--line)}}
+.beat .k{display:flex;align-items:center;gap:8px;font:600 .72rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.beat .k i{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:.72rem;background:var(--panel);border:1px solid var(--line);color:var(--ink)}
+.beat.p .k{color:var(--warn)}.beat.p .k i{background:var(--warn-soft);border-color:transparent;color:var(--warn)}
+.beat.i .k{color:var(--accent)}.beat.i .k i{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+.beat.r .k{color:var(--ok)}.beat.r .k i{background:var(--ok-soft);border-color:transparent;color:var(--ok)}
+.beat p{font-size:.95rem;line-height:1.45}
+@media(max-width:620px){.beat{padding:12px 14px;gap:4px}.beat p{font-size:.88rem}}
+/* narrator */
+.guide{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 18px;background:var(--accent-soft);border-bottom:1px solid var(--line)}
+@media(max-width:620px){.guide{grid-template-columns:1fr;gap:8px}}
+.guide .tag{font:600 .66rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent);background:var(--window);border-radius:6px;padding:4px 7px;justify-self:start}
+.guide p{font-size:.9rem;line-height:1.4}
+.guide p b{font-weight:600}
+.guide p span{color:var(--muted)}
+.guide .btn{min-height:34px;padding:6px 12px;font-size:.82rem;white-space:nowrap;justify-self:start}
+/* window */
+.window{background:var(--window);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid var(--line)}
+.org{display:flex;align-items:center;gap:10px;font-size:.88rem;color:var(--muted);min-width:0}
+.org b{color:var(--ink);font-weight:600}
+.logo{width:28px;height:28px;border-radius:8px;background:var(--ink);color:var(--window);display:grid;place-items:center;font:700 .8rem var(--display);flex:none}
+.steps{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px;max-width:100%;overflow-x:auto}
+.steps button{font:600 .8rem var(--sans);border:0;background:transparent;color:var(--muted);border-radius:7px;padding:6px 12px;cursor:pointer;min-height:32px;display:flex;gap:6px;align-items:center;white-space:nowrap}
+.steps button[aria-current="step"]{background:var(--window);color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.steps .tick{color:var(--ok)}
+@media(max-width:560px){.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;overflow:visible}.steps button{white-space:normal;justify-content:center;text-align:center;padding:6px;font-size:.76rem;line-height:1.2}}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 270px}
+@media(max-width:860px){.cols{grid-template-columns:1fr}.side{border-left:0!important;border-top:1px solid var(--line)}}
+.main{padding:22px;display:grid;gap:16px;align-content:start;min-width:0;min-height:470px}
+@media(max-width:860px){.main{min-height:0}}
+@media(max-width:420px){.main{padding:16px}}
+.title{display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap}
+.title h2{font:700 1.35rem/1.2 var(--display);letter-spacing:-.01em}
+.title p{color:var(--muted);font-size:.9rem;margin-top:3px}
+.pill{font:600 .74rem var(--sans);padding:5px 10px;border-radius:999px;white-space:nowrap}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}.pill.ok{background:var(--ok-soft);color:var(--ok)}.pill.info{background:var(--accent-soft);color:var(--accent)}.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.src{font:600 .62rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:1px 5px;white-space:nowrap;vertical-align:middle}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font:600 .88rem var(--sans);border-radius:9px;padding:9px 16px;cursor:pointer;border:1px solid var(--line);background:var(--window);color:var(--ink);min-height:40px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{border-color:transparent;color:var(--muted)}
+.btn:focus-visible,.steps button:focus-visible,.seg button:focus-visible,.linkbtn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.more{font-size:.84rem;color:var(--muted)}
+/* step 1: the number */
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px}
+@media(max-width:700px){.hero{grid-template-columns:1fr}}
+.big{border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:12px;align-content:start}
+.big .cap{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.num{font:800 clamp(2.6rem,7vw,3.6rem)/1 var(--display);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.num small{font:600 1rem var(--sans);letter-spacing:0;color:var(--muted);margin-left:6px}
+.seg{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px;justify-self:start;max-width:100%}
+.seg button{font:600 .8rem var(--sans);border:0;background:transparent;color:var(--muted);border-radius:6px;padding:6px 11px;cursor:pointer;min-height:32px}
+.seg button[aria-pressed="true"]{background:var(--window);color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.made{display:grid;gap:6px;font-size:.9rem;border-top:1px dashed var(--line);padding-top:12px}
+.made .row{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.made .row b{font-variant-numeric:tabular-nums}
+.est{background:var(--warn-soft);color:var(--warn);font:600 .74rem var(--sans);border-radius:6px;padding:2px 7px}
+.sure{border:1px solid var(--line);border-radius:12px;overflow:hidden;display:grid;align-content:start}
+.sure .sh{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:12px 14px;background:var(--panel);border-bottom:1px solid var(--line)}
+.sure .sh b{font:700 1rem var(--display)}
+.fact{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:12px 14px;border-top:1px solid var(--line);align-items:center}
+.fact:first-of-type{border-top:0}
+.fact .l{font-size:.84rem;color:var(--muted)}
+.fact .v{font:700 1.05rem var(--display);font-variant-numeric:tabular-nums}
+.fact .v span{font:500 .82rem var(--sans);color:var(--muted)}
+.note{background:var(--warn-soft);color:var(--ink);padding:12px 14px;font-size:.88rem;display:grid;gap:2px}
+.note b{color:var(--warn)}
+/* step 2: teams */
+.teams{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tr{display:grid;grid-template-columns:minmax(0,1.3fr) repeat(4,minmax(0,1fr));gap:10px;padding:10px 14px;border-top:1px solid var(--line);align-items:center;font-size:.9rem;font-variant-numeric:tabular-nums}
+.tr:first-child{border-top:0}
+.tr.th{background:var(--panel);font:600 .7rem var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.tr.th span{display:grid;gap:3px;justify-items:start}
+.tr.flag{background:var(--bad-soft)}
+.tr .tm b{font-weight:600;display:block}.tr .tm small{color:var(--muted);font-size:.78rem}
+.tr .c small{display:none}
+.tr.tot{font-weight:600;background:var(--panel)}
+.bar2{height:5px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:4px;max-width:90px}
+.bar2 i{display:block;height:100%;background:var(--accent)}
+.tr.flag .bar2 i{background:var(--bad)}
+@media(max-width:640px){
+  .tr.th{display:none}
+  .tr{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}
+  .tr .tm{grid-column:1/-1}
+  .tr .c small{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;color:var(--muted);font-size:.72rem;margin-bottom:2px}
+}
+.find{border:1px solid var(--bad);background:var(--bad-soft);border-radius:12px;padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;align-items:center}
+@media(max-width:560px){.find{grid-template-columns:1fr}}
+.find h3{font:700 1.1rem/1.25 var(--display)}
+.find p{font-size:.88rem;color:var(--muted)}
+/* step 3: the call */
+.rec{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.rec .rh{padding:16px;display:grid;gap:6px;border-bottom:1px solid var(--line)}
+.rec .rh h3{font:800 1.45rem/1.15 var(--display);letter-spacing:-.01em}
+.money{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:560px){.money{grid-template-columns:1fr}}
+.money div{padding:12px 16px;border-left:1px solid var(--line);display:grid;gap:2px}
+.money div:first-child{border-left:0}
+@media(max-width:560px){.money div{border-left:0;border-top:1px solid var(--line)}.money div:first-child{border-top:0}}
+.money span{font-size:.78rem;color:var(--muted)}
+.money b{font:700 1.15rem var(--display);font-variant-numeric:tabular-nums}
+.money small{font-size:.76rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.money .save b{color:var(--ok)}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+@media(max-width:640px){.two{grid-template-columns:1fr}}
+.box{border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;gap:8px;align-content:start}
+.box .cap{margin-bottom:2px}
+.box ul{margin:0;padding:0;list-style:none;display:grid;gap:6px;font-size:.86rem}
+.box li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:baseline}
+.box.chg{background:var(--accent-soft);border-color:transparent}
+.out{border-radius:12px;padding:16px;display:grid;gap:8px}
+.out.ok{border:1px solid var(--ok);background:var(--ok-soft)}
+.out.ok h3{color:var(--ok)}
+.out.bad{border:1px solid var(--warn);background:var(--warn-soft)}
+.out.bad h3{color:var(--warn)}
+.out h3{font:700 1.15rem var(--display)}
+.out p{font-size:.9rem}
+.board{background:var(--window);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:6px;font-size:.88rem}
+.board ol{margin:0;padding-left:20px;display:grid;gap:4px}
+.linkbtn{font:600 .9rem var(--sans);border:0;background:none;color:var(--accent);padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+/* side */
+.side{background:var(--panel);border-left:1px solid var(--line);padding:20px;display:grid;gap:12px;align-content:start}
+.cap{font:500 .68rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.score{display:flex;align-items:baseline;gap:6px}
+.score strong{font:800 2rem/1 var(--display);font-variant-numeric:tabular-nums}
+.score span{color:var(--muted);font-size:.86rem}
+.meter{height:6px;border-radius:999px;background:var(--line);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--ok);transition:width .3s}
+.checks{display:grid}
+.checks div{display:grid;grid-template-columns:10px minmax(0,1fr);gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:.86rem}
+.checks div:first-child{border-top:0}
+.checks i{width:9px;height:9px;border-radius:50%;margin-top:5px;background:var(--off)}
+.checks i.ok{background:var(--ok)}.checks i.warn{background:var(--warn)}
+.checks b{display:block;font-weight:600}.checks span span{color:var(--muted)}
+.hint{font-size:.8rem;color:var(--muted)}
+/* proof */
+.proof{background:var(--window);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:18px;align-items:center}
+@media(max-width:720px){.proof{grid-template-columns:1fr}}
+.proof b{font-size:.98rem}.proof p{color:var(--muted);font-size:.88rem;margin-top:3px}
+.proof a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px}
+.stat strong{display:block;font:800 1.3rem/1 var(--display);font-variant-numeric:tabular-nums}
+.stat span{font-size:.74rem;color:var(--muted);line-height:1.25;display:block;margin-top:4px}
+@media(max-width:480px){.stats{grid-template-columns:1fr}.stat{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;align-items:center}.stat span{margin-top:0}}
+footer{color:var(--muted);font-size:.76rem}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+@media(prefers-reduced-motion:no-preference){.main>*{animation:in .2s ease-out both}@keyframes in{from{transform:translateY(4px)}to{transform:none}}}
+@media(prefers-reduced-motion:reduce){.meter i{transition:none}}
+</style>
+<style>body{margin:0}</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="head">
+    <div>
+      <div class="eyebrow">Design concept · Finance view</div>
+      <h1>A number a CFO can defend</h1>
+      <p class="sub">A 3-step view for finance leaders, built on Larridin's own rule: AI capacity is not the same as savings.</p>
+    </div>
+    <div class="by">Gaurav Basantani<br><a href="https://gauravbasantani.com">gauravbasantani.com</a></div>
+  </header>
+
+  <section class="story" aria-label="The story">
+    <div class="beat p"><span class="k"><i>1</i>The problem</span><p>AI dashboards show big numbers like 2.5× return. But a CFO has to defend that number to the board, and capacity isn't cash.</p></div>
+    <div class="beat i"><span class="k"><i>2</i>The idea</span><p>Show how sure each number is, what it depends on, and what would change it, right next to the number.</p></div>
+    <div class="beat r"><span class="k"><i>3</i>What changes</span><p>Finance makes the renewal call with a number it can stand behind, and knows exactly what to say about it.</p></div>
+  </section>
+
+  <section class="window" aria-label="Finance view screen concept">
+    <div class="bar">
+      <span class="org"><span class="logo" aria-hidden="true">T</span><span><b>Tallyline</b> · Kestrel Ridge, 2,000 people · Coding assistant renewal in 30 days</span></span>
+      <nav class="steps" aria-label="Steps">
+        <button type="button" data-go="1" id="s1"></button>
+        <button type="button" data-go="2" id="s2"></button>
+        <button type="button" data-go="3" id="s3"></button>
+      </nav>
+    </div>
+    <div class="guide" id="guide"></div>
+    <div class="cols">
+      <div class="main" id="main" aria-live="polite"></div>
+      <aside class="side" aria-label="Ready to decide">
+        <span class="cap">Ready to decide</span>
+        <div class="score"><strong id="cnt">2</strong><span id="cnts">of 4 checks done</span></div>
+        <div class="meter"><i id="bar"></i></div>
+        <div class="checks" id="checks"></div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="proof" aria-label="Where this comes from">
+    <div>
+      <b>I design numbers people can trust.</b>
+      <p>Dashboards that made dense candidate data quick to read at tCognition, <a href="https://gauravide.vercel.app">Gauravide</a>, where every line the AI isn't sure of gets checked, and an <a href="https://github.com/gauravbasantani/job-agent">open-source job agent</a> where a script enforces honest scoring.</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><strong>−30%</strong><span>offer drop-offs after shipping tCognition's hiring platform</span></div>
+      <div class="stat"><strong>39 of 67</strong><span>receipt scans in Gauravide checked line by line</span></div>
+      <div class="stat"><strong>0 of 67</strong><span>receipts left unreadable</span></div>
+    </div>
+  </section>
+
+  <footer>Unofficial concept for Larridin. Not affiliated with Larridin. The company, team and numbers are made up.</footer>
+</div>
+
+<script>
+(function(){
+  /* Every number below is derived here, so the page always adds up.
+     400 seats x $39 x 12 = $187,200 a year. 120 h/week x 52 = 6,240 h a year x $75 = $468,000. 468,000 / 187,200 = 2.5x.
+     Keep 288 seats: 288 x 39 x 12 = $134,784. Drop 112: 112 x 39 x 12 = $52,416. */
+  var PRICE=39, RATE=75;
+  var TEAMS=[
+    {n:"Platform",lead:"Engineering",seats:140,used:126,hrs:54},
+    {n:"Product engineering",lead:"Engineering",seats:120,used:96,hrs:42},
+    {n:"Data",lead:"Analytics",seats:60,used:42,hrs:18},
+    {n:"QA and tools",lead:"Engineering",seats:80,used:24,hrs:6}
+  ];
+  function sum(k){return TEAMS.reduce(function(a,t){return a+t[k]},0)}
+  var SEATS=sum("seats"), USED=sum("used"), UNUSED=SEATS-USED, HRS=sum("hrs");
+  var SPEND=SEATS*PRICE*12, KEEP=USED*PRICE*12, SAVE=UNUSED*PRICE*12;
+  var HRS_YR=HRS*52, VALUE=HRS_YR*RATE, ROI=VALUE/SPEND;
+  var WEEK=PRICE*12/52; /* $9 a seat a week */
+  function $(n){return "$"+Math.round(n).toLocaleString("en-US")}
+  function n(x){return Math.round(x).toLocaleString("en-US")}
+  function x(r){return (Math.round(r*10)/10).toFixed(1)+"×"}
+  function cph(t){return t.seats*WEEK/t.hrs}
+  function fresh(){return {step:1,view:"hours",seen2:false,dec:null,copied:false}}
+  var st=fresh();
+  var main=document.getElementById("main");
+  var tag=function(s){return '<span class="src">'+s+'</span>'};
+
+  function step1(){
+    var h="";
+    h+='<div class="title"><div><h2>Can Dana repeat this to the board?</h2><p>Return on the coding assistant, last 9 weeks.</p></div><span class="pill warn">Medium confidence</span></div>';
+    h+='<div class="hero"><div class="big">';
+    h+='<div class="cap"><span>Return on AI spend</span>'+tag("Model")+'</div>';
+    h+='<div class="num">'+x(ROI)+'<small>return</small></div>';
+    h+='<div class="seg" role="group" aria-label="Show the return as"><button type="button" data-view="hours" aria-pressed="'+(st.view==="hours")+'">Show as hours</button><button type="button" data-view="dollars" aria-pressed="'+(st.view==="dollars")+'">Show as dollars</button></div>';
+    h+='<div class="made">';
+    if(st.view==="hours"){
+      h+='<div class="row"><span>AI capacity</span><b>'+n(HRS)+' hours a week '+tag("Usage")+'</b></div>';
+      h+='<div class="row"><span>Over a year</span><b>'+n(HRS_YR)+' hours</b></div>';
+      h+='<div class="row"><span>Spend</span><b>'+$(SPEND)+' a year '+tag("Billing")+'</b></div>';
+    }else{
+      h+='<div class="row"><span>Capacity in dollars</span><b>'+$(VALUE)+' <span class="est">Estimate</span></b></div>';
+      h+='<div class="row"><span>How</span><b>'+n(HRS_YR)+' h × '+$(RATE)+' an hour</b></div>';
+      h+='<div class="row"><span>Spend</span><b>'+$(SPEND)+' a year '+tag("Billing")+'</b></div>';
+      h+='<p class="more">'+$(VALUE)+' ÷ '+$(SPEND)+' = '+x(ROI)+'. The $'+RATE+' is an assumed cost per hour, not a payment.</p>';
+    }
+    h+='</div></div>';
+    h+='<div class="sure"><div class="sh"><b>How sure is this?</b><span class="pill warn">Medium</span></div>';
+    h+='<div class="fact"><span class="l">Data coverage</span><span class="pill warn">Partial</span><span class="v">78% <span>14 of 18 teams connected</span></span></div>';
+    h+='<div class="fact"><span class="l">Baseline length</span><span class="pill ok">Enough</span><span class="v">9 weeks <span>8 needed</span></span></div>';
+    h+='<div class="note"><b>Capacity isn\'t cash</b><span>Capacity is time AI could free up, not cash saved.</span></div>';
+    h+='</div></div>';
+    h+='<div class="btns"><button type="button" class="btn primary" data-go="2">Where it comes from</button></div>';
+    return h;
+  }
+  function step2(){
+    var h="";
+    h+='<div class="title"><div><h2>Where does 2.5× come from?</h2><p>4 teams with seats. Last 30 days.</p></div><span class="pill info">'+n(SEATS)+' seats</span></div>';
+    h+='<div class="teams" role="table" aria-label="Teams using the coding assistant">';
+    h+='<div class="tr th" role="row"><span role="columnheader">Team</span><span role="columnheader">Seats used '+tag("Billing")+'</span><span role="columnheader">Adoption '+tag("Usage")+'</span><span role="columnheader">Hours a week '+tag("Survey")+'</span><span role="columnheader">Cost per AI hour</span></div>';
+    TEAMS.forEach(function(t){
+      var ad=Math.round(t.used/t.seats*100), low=ad<50;
+      h+='<div class="tr'+(low?" flag":"")+'" role="row"><span class="tm" role="cell"><b>'+t.n+'</b><small>'+t.lead+(low?' · '+(t.seats-t.used)+' seats unused':'')+'</small></span>'+
+        '<span class="c" role="cell"><small>Seats used '+tag("Billing")+'</small>'+t.used+' of '+t.seats+'</span>'+
+        '<span class="c" role="cell"><small>Adoption '+tag("Usage")+'</small>'+ad+'%<span class="bar2" aria-hidden="true"><i style="width:'+ad+'%"></i></span></span>'+
+        '<span class="c" role="cell"><small>Hours a week '+tag("Survey")+'</small>'+t.hrs+' h</span>'+
+        '<span class="c" role="cell"><small>Cost per AI hour</small>'+$(cph(t))+'</span></div>';
+    });
+    h+='<div class="tr tot" role="row"><span class="tm" role="cell"><b>All teams</b></span><span class="c" role="cell"><small>Seats used</small>'+USED+' of '+SEATS+'</span><span class="c" role="cell"><small>Adoption</small>'+Math.round(USED/SEATS*100)+'%</span><span class="c" role="cell"><small>Hours a week</small>'+HRS+' h</span><span class="c" role="cell"><small>Cost per AI hour</small>'+$(SEATS*WEEK/HRS)+'</span></div>';
+    h+='</div>';
+    h+='<div class="find"><div><span class="cap">Matters for the renewal</span><h3>'+UNUSED+' of '+SEATS+' seats unused in the last 30 days</h3><p>Mostly in QA and tools: 56 of 80 seats with no use. '+tag("Usage")+' '+tag("Billing")+'</p></div><button type="button" class="btn primary" data-go="3">See the call</button></div>';
+    return h;
+  }
+  function step3(){
+    var h="";
+    if(st.dec==="accept"){
+      h+='<div class="title"><div><h2>Renewal decided</h2><p>'+USED+' seats renewed. '+UNUSED+' dropped.</p></div><span class="pill ok">Decided</span></div>';
+      h+='<div class="out ok"><h3>Saves '+$(SAVE)+' a year</h3><p>'+UNUSED+' seats × '+$(PRICE)+' a month × 12. From billing and usage, not from the 2.5×.</p></div>';
+      h+=boardBox();
+      h+='<div class="btns"><button type="button" class="btn primary" data-copy="1">'+(st.copied?"Copied":"Copy for the board")+'</button><button type="button" class="btn" data-undo="1">Undo</button></div>';
+      return h;
+    }
+    if(st.dec==="keep"){
+      h+='<div class="title"><div><h2>Keeping all '+SEATS+' seats</h2><p>Renewal at '+$(SPEND)+' a year.</p></div><span class="pill warn">Decided</span></div>';
+      h+='<div class="out bad"><h3>'+$(SAVE)+' a year on unused seats</h3><p>'+UNUSED+' seats had no use in 30 days. Worth it only if QA and tools roll out next month.</p></div>';
+      h+='<div class="btns"><button type="button" class="btn" data-undo="1">Undo</button></div>';
+      return h;
+    }
+    h+='<div class="title"><div><h2>Renew '+USED+' seats, drop '+UNUSED+'</h2><p>Recommended. Based on billing and usage only.</p></div><span class="pill info">Recommendation</span></div>';
+    h+='<div class="rec"><div class="money">'+
+      '<div><span>Today</span><b>'+$(SPEND)+'</b><small>'+SEATS+' × '+$(PRICE)+' × 12</small></div>'+
+      '<div><span>After</span><b>'+$(KEEP)+'</b><small>'+USED+' × '+$(PRICE)+' × 12</small></div>'+
+      '<div class="save"><span>Yearly saving</span><b>'+$(SAVE)+'</b><small>'+UNUSED+' × '+$(PRICE)+' × 12</small></div></div></div>';
+    h+='<div class="two"><div class="box"><span class="cap">Assumptions</span><ul>'+
+      '<li><span>Seat price, monthly</span>'+tag("Billing")+'</li>'+
+      '<li><span>Unused = no use in 30 days</span>'+tag("Usage")+'</li>'+
+      '<li><span>Hours don\'t change the saving</span>'+tag("Survey")+'</li></ul></div>'+
+      '<div class="box chg"><span class="cap">What would change this call</span><ul>'+
+      '<li><span>QA and tools rollout planned next month</span><span class="pill warn">Watch</span></li>'+
+      '<li><span>Seats can be added back any month</span><span class="pill ok">Low risk</span></li></ul></div></div>';
+    h+='<div class="btns"><button type="button" class="btn primary" data-dec="accept">Accept</button><button type="button" class="btn" data-dec="keep">Keep all '+SEATS+' seats</button><button type="button" class="btn ghost" data-copy="1">'+(st.copied?"Copied":"Copy for the board")+'</button></div>';
+    if(st.copied)h+=boardBox();
+    return h;
+  }
+  function boardLines(){
+    return [
+      "We renew "+USED+" of "+SEATS+" coding assistant seats. "+UNUSED+" had no use in the last 30 days.",
+      "This saves "+$(SAVE)+" a year ("+UNUSED+" seats × "+$(PRICE)+" a month), from billing, not an estimate.",
+      "The "+x(ROI)+" return is AI capacity, not cash saved. We check again after QA and tools roll out."
+    ];
+  }
+  function boardBox(){
+    return '<div class="board"><span class="cap">For the board</span><ol>'+boardLines().map(function(l){return '<li>'+l+'</li>'}).join("")+'</ol></div>';
+  }
+  function side(){
+    var c=[true,true,st.seen2,!!st.dec], d=c.filter(Boolean).length;
+    document.getElementById("cnt").textContent=d;
+    document.getElementById("cnts").textContent="of 4 checks done";
+    document.getElementById("bar").style.width=(d/4*100)+"%";
+    function row(cls,t,s){return '<div><i class="'+cls+'"></i><span><b>'+t+'</b><span>'+s+'</span></span></div>'}
+    document.getElementById("checks").innerHTML=
+      row("ok","Data connected","14 of 18 teams · 78%")+
+      row("ok","Baseline long enough","9 weeks, 8 needed")+
+      row(st.seen2?"ok":"",'Unused seats found',st.seen2?UNUSED+" of "+SEATS+" seats":"See step 2")+
+      row(st.dec==="accept"?"ok":st.dec==="keep"?"warn":"","Decision made",st.dec==="accept"?"Renew "+USED+", save "+$(SAVE):st.dec==="keep"?"Keep all "+SEATS:"Not yet");
+  }
+  function guide(){
+    var t="",nx="",s=st.step;
+    if(s===1){
+      if(st.view==="hours"){t='<b>Dana, VP Finance, renews the coding assistant in 30 days.</b> <span>The dashboard says 2.5×. Before she repeats it, she checks how sure it is.</span>'; nx='<button type="button" class="btn" data-view="dollars">Try: show as dollars</button>'}
+      else{t='<b>Notice the "Estimate" tag.</b> <span>Hours become dollars only through an assumed $75 an hour. Dana won\'t call that savings.</span>'; nx='<button type="button" class="btn primary" data-go="2">Next: where it comes from →</button>'}
+    }else if(s===2){
+      t='<b>Dana opens the teams behind the number.</b> <span>Each figure says where it comes from. One team barely uses its seats.</span>'; nx='<button type="button" class="btn primary" data-go="3">Next: the call →</button>';
+    }else if(!st.dec){
+      t='<b>The call uses billing and usage, not the 2.5×.</b> <span>Every number adds up, and it says what would change it.</span>'; nx='<span class="hint">Try: Accept, or keep all '+SEATS+'</span>';
+    }else if(st.dec==="accept"){
+      t='<b>Done.</b> <span>Dana renews '+USED+' seats and has three plain lines for the board.</span>'; nx='<button type="button" class="btn" data-reset="1">Replay the story</button>';
+    }else{
+      t='<b>Dana kept all '+SEATS+'.</b> <span>That\'s allowed, but the cost is shown, not hidden.</span>'; nx='<button type="button" class="btn" data-undo="1">Undo</button>';
+    }
+    document.getElementById("guide").innerHTML='<span class="tag">Story '+s+' / 3</span><p>'+t+'</p>'+nx;
+  }
+  function render(){
+    if(st.step>=2)st.seen2=true;
+    var dn=[st.view==="dollars"||st.step>1||st.seen2, st.seen2, !!st.dec], L=["The number","Where it comes from","The call"];
+    ["s1","s2","s3"].forEach(function(id,i){var b=document.getElementById(id);
+      if(i+1===st.step)b.setAttribute("aria-current","step");else b.removeAttribute("aria-current");
+      b.innerHTML=(dn[i]&&i+1!==st.step?'<span class="tick" aria-hidden="true">✓</span>':'<span>'+(i+1)+'</span>')+'<span>'+L[i]+'</span>'+(dn[i]?'<span class="sr"> (done)</span>':'')});
+    main.innerHTML=st.step===1?step1():st.step===2?step2():step3();
+    side(); guide();
+  }
+  document.addEventListener("click",function(ev){
+    var b=ev.target.closest("button"); if(!b||b.disabled)return;
+    var d=b.dataset;
+    if(d.go){st.step=+d.go}
+    if(d.view){st.view=d.view}
+    if(d.dec){st.dec=d.dec}
+    if(d.undo){st.dec=null; st.copied=false}
+    if(d.copy){
+      var txt=boardLines().map(function(l,i){return (i+1)+". "+l}).join("\n");
+      try{if(navigator.clipboard)navigator.clipboard.writeText(txt).catch(function(){})}catch(e){}
+      st.copied=true;
+    }
+    if(d.reset){st=fresh()}
+    render();
+  });
+  render();
+})();
+</script>
+
+</body>
+</html>
